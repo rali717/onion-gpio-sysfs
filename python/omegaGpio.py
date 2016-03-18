@@ -4,6 +4,10 @@ import sys
 __version__ = "0.1"
 
 
+_EXIT_SUCCESS			= 0
+_EXIT_FAILURE			= -1
+
+
 GPIO_BASE_PATH 			= '/sys/class/gpio'
 GPIO_EXPORT 			= GPIO_BASE_PATH + '/export'
 GPIO_UNEXPORT 			= GPIO_BASE_PATH + '/unexport'
@@ -11,12 +15,13 @@ GPIO_UNEXPORT 			= GPIO_BASE_PATH + '/unexport'
 GPIO_PATH 				= GPIO_BASE_PATH + '/gpio%d'
 GPIO_VALUE_FILE			= 'value'
 GPIO_DIRECTION_FILE		= 'direction'
+GPIO_ACTIVE_LOW_FILE	= 'active_low'
 
 _GPIO_INPUT_DIRECTION	= 'in'
 _GPIO_OUTPUT_DIRECTION	= 'out'
 
-_EXIT_SUCCESS			= 0
-_EXIT_FAILURE			= -1
+_GPIO_ACTIVE_HIGH		= 0
+_GPIO_ACTIVE_LOW		= 1
 
 
 class OmegaGpio:
@@ -46,6 +51,7 @@ class OmegaGpio:
 
 		return _EXIT_FAILURE
 
+	# value functions
 	def getValue(self):
 		"""Read current GPIO value"""
 		# generate the gpio sysfs instance
@@ -87,6 +93,7 @@ class OmegaGpio:
 
 		return _EXIT_FAILURE
 
+	# direction functions
 	def getDirection(self):
 		"""Read current GPIO direction"""
 		# generate the gpio sysfs instance
@@ -94,7 +101,7 @@ class OmegaGpio:
 
 		if status == _EXIT_SUCCESS:
 			gpioFile 	= self.path + "/" + GPIO_DIRECTION_FILE
-			direction	= 0
+			direction	= _EXIT_FAILURE
 
 			with open(gpioFile, 'r') as fd:
 				direction 	= fd.read()
@@ -137,5 +144,58 @@ class OmegaGpio:
 		ret 	= self._setDirection(_GPIO_OUTPUT_DIRECTION)
 		return 	ret
 
+	# active-low functions
+	def getActiveLow(self):
+		"""Read if current GPIO is active-low"""
+		# generate the gpio sysfs instance
+		status 	= self._initGpio()
+
+		if status == _EXIT_SUCCESS:
+			gpioFile 	= self.path + "/" + GPIO_ACTIVE_LOW_FILE
+			activeLow	= _EXIT_FAILURE
+
+			with open(gpioFile, 'r') as fd:
+				print 'Reading %s file'%(gpioFile),
+				activeLow 	= fd.read()
+				print ' ... Read %s'%(activeLow)
+				fd.close()
+
+			# release the gpio sysfs instance
+			status 	= self._freeGpio()
+
+			return activeLow
+
+		return _EXIT_FAILURE
+
+	def _setActiveLow(self, activeLow):
+		"""Set the desired GPIO direction"""
+		ret = _EXIT_FAILURE
+		# generate the gpio sysfs instance
+		status 	= self._initGpio()
+
+		if status == _EXIT_SUCCESS:
+			gpioFile 	= self.path + "/" + GPIO_ACTIVE_LOW_FILE
+
+			if activeLow == _GPIO_ACTIVE_HIGH or activeLow == _GPIO_ACTIVE_LOW:
+				with open(gpioFile, 'w') as fd:
+					print 'Writing %s to %s file'%(str(activeLow), gpioFile)
+					fd.write(str(activeLow))
+					fd.close()
+					ret = _EXIT_SUCCESS
+
+			# release the gpio sysfs instance
+			status 	= self._freeGpio()
+
+			return ret
+
+		return _EXIT_FAILURE
+
+	def setActiveHigh(self):
+		ret 	= self._setActiveLow(_GPIO_ACTIVE_HIGH)
+		return 	ret
+
+	def setActiveLow(self):
+		ret 	= self._setActiveLow(_GPIO_ACTIVE_LOW)
+		return 	ret
 
 
