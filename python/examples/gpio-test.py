@@ -1,7 +1,9 @@
 import omegaGpio
 
+pin = 14
+
 print '> Instantiating gpio object'
-gpio14 	= omegaGpio.OmegaGpio(14)
+gpio14 	= omegaGpio.OmegaGpio(pin)
 print ''
 
 print '> Set direction to input... '
@@ -18,7 +20,7 @@ print val
 
 
 
-raw_input('  Ready to test output?')
+raw_input('Ready to test output?')
 
 print '> Set direction to output... '
 ret 	= gpio14.setOutputDirection()
@@ -54,5 +56,5 @@ print val
 
 
 
-
+print ''
 print '> Done!'
