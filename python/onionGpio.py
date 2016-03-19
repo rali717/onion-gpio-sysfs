@@ -27,11 +27,14 @@ _GPIO_ACTIVE_LOW		= 1
 class OnionGpio:
 	"""Base class for sysfs GPIO access"""
 
-	def __init__(self, gpio):
+	def __init__(self, gpio, verbose=0):
 		self.gpio 		= gpio
 		self.path 		= GPIO_PATH%(self.gpio)
 
-		#print 'GPIO%d path: %s'%(self.gpio, self.path)
+		self.verbose 	= verbose
+
+		if self.verbose > 0:
+			print 'GPIO%d path: %s'%(self.gpio, self.path)
 		
 
 	def _initGpio(self):
@@ -156,10 +159,10 @@ class OnionGpio:
 			activeLow	= _EXIT_FAILURE
 
 			with open(gpioFile, 'r') as fd:
-				print 'Reading %s file'%(gpioFile),
 				activeLow 	= fd.read()
-				print ' ... Read %s'%(activeLow)
 				fd.close()
+				if self.verbose > 0:
+					print 'onionGpio:getActiveLow:: Reading %s file ... Read %s'%(gpioFile, activeLow)
 
 			# release the gpio sysfs instance
 			status 	= self._freeGpio()
@@ -179,13 +182,15 @@ class OnionGpio:
 
 			if activeLow == _GPIO_ACTIVE_HIGH or activeLow == _GPIO_ACTIVE_LOW:
 				with open(gpioFile, 'w') as fd:
-					print 'Writing %s to %s file'%(str(activeLow), gpioFile)
+					if self.verbose > 0:
+						print 'onionGpio:_setActiveLow:: Writing %s to %s file'%(str(activeLow), gpioFile)
 					fd.write(str(activeLow))
 					fd.close()
 					ret = _EXIT_SUCCESS
 
 			# release the gpio sysfs instance
 			status 	= self._freeGpio()
+			# note: active_low setting is reset when the gpio sysfs interface is released!
 
 			return ret
 
