@@ -31,7 +31,8 @@ class OmegaGpio:
 		self.gpio 		= gpio
 		self.path 		= GPIO_PATH%(self.gpio)
 
-		print 'GPIO%d path: %s'%(self.gpio, self.path)
+		#print 'GPIO%d path: %s'%(self.gpio, self.path)
+		
 
 	def _initGpio(self):
 		"""Write to the gpio export to make the gpio available in sysfs"""
