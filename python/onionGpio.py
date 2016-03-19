@@ -99,6 +99,7 @@ class OnionGpio:
 
 		return _EXIT_FAILURE
 
+
 	# direction functions
 	def getDirection(self):
 		"""Read current GPIO direction"""
