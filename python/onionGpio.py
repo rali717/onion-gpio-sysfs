@@ -8,20 +8,22 @@ _EXIT_SUCCESS			= 0
 _EXIT_FAILURE			= -1
 
 
-GPIO_BASE_PATH 			= '/sys/class/gpio'
-GPIO_EXPORT 			= GPIO_BASE_PATH + '/export'
-GPIO_UNEXPORT 			= GPIO_BASE_PATH + '/unexport'
-	
-GPIO_PATH 				= GPIO_BASE_PATH + '/gpio%d'
-GPIO_VALUE_FILE			= 'value'
-GPIO_DIRECTION_FILE		= 'direction'
-GPIO_ACTIVE_LOW_FILE	= 'active_low'
+GPIO_BASE_PATH 					= '/sys/class/gpio'
+GPIO_EXPORT 					= GPIO_BASE_PATH + '/export'
+GPIO_UNEXPORT 					= GPIO_BASE_PATH + '/unexport'
+			
+GPIO_PATH 						= GPIO_BASE_PATH + '/gpio%d'
+GPIO_VALUE_FILE					= 'value'
+GPIO_DIRECTION_FILE				= 'direction'
+GPIO_ACTIVE_LOW_FILE			= 'active_low'
 
-_GPIO_INPUT_DIRECTION	= 'in'
-_GPIO_OUTPUT_DIRECTION	= 'out'
+_GPIO_INPUT_DIRECTION			= 'in'
+_GPIO_OUTPUT_DIRECTION			= 'out'
+_GPIO_OUTPUT_DIRECTION_LOW		= 'low'
+_GPIO_OUTPUT_DIRECTION_HIGH		= 'high'
 
-_GPIO_ACTIVE_HIGH		= 0
-_GPIO_ACTIVE_LOW		= 1
+_GPIO_ACTIVE_HIGH				= 0
+_GPIO_ACTIVE_LOW				= 1
 
 
 class OnionGpio:
@@ -107,6 +109,7 @@ class OnionGpio:
 			gpioFile 	= self.path + "/" + GPIO_DIRECTION_FILE
 			direction	= _EXIT_FAILURE
 
+			# read from the direction file
 			with open(gpioFile, 'r') as fd:
 				direction 	= fd.read()
 				fd.close()
@@ -121,17 +124,27 @@ class OnionGpio:
 	def _setDirection(self, direction):
 		"""Set the desired GPIO direction"""
 		ret = _EXIT_FAILURE
+
+		# check the direction argument
+		if direction != _GPIO_INPUT_DIRECTION and direction != _GPIO_OUTPUT_DIRECTION and direction != _GPIO_OUTPUT_DIRECTION_LOW and direction != _GPIO_OUTPUT_DIRECTION_HIGH:
+			return _EXIT_FAILURE
+
 		# generate the gpio sysfs instance
 		status 	= self._initGpio()
 
 		if status == _EXIT_SUCCESS:
 			gpioFile 	= self.path + "/" + GPIO_DIRECTION_FILE
 
-			if direction == _GPIO_INPUT_DIRECTION or direction == _GPIO_OUTPUT_DIRECTION:
-				with open(gpioFile, 'w') as fd:
-					fd.write(direction)
-					fd.close()
-					ret = _EXIT_SUCCESS
+			# write to the direction file
+			with open(gpioFile, 'w') as fd:
+				fd.write(direction)
+				fd.close()
+				ret = _EXIT_SUCCESS
+
+				# set default for output direction
+				if direction == _GPIO_OUTPUT_DIRECTION:
+					self.setValue(0)
+
 
 			# release the gpio sysfs instance
 			status 	= self._freeGpio()
@@ -144,9 +157,16 @@ class OnionGpio:
 		ret 	= self._setDirection(_GPIO_INPUT_DIRECTION)
 		return 	ret
 
-	def setOutputDirection(self):
-		ret 	= self._setDirection(_GPIO_OUTPUT_DIRECTION)
+	def setOutputDirection(self, initial=-1):
+		argument	= _GPIO_OUTPUT_DIRECTION
+		if initial == 0:
+			argument = _GPIO_OUTPUT_DIRECTION_LOW
+		elif initial == 1:
+			argument = _GPIO_OUTPUT_DIRECTION_HIGH
+
+		ret 	= self._setDirection(argument)
 		return 	ret
+
 
 	# active-low functions
 	def getActiveLow(self):
