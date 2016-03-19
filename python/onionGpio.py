@@ -24,7 +24,7 @@ _GPIO_ACTIVE_HIGH		= 0
 _GPIO_ACTIVE_LOW		= 1
 
 
-class OmegaGpio:
+class OnionGpio:
 	"""Base class for sysfs GPIO access"""
 
 	def __init__(self, gpio):

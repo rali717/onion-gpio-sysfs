@@ -1,9 +1,9 @@
-import omegaGpio
+import onionGpio
 
 pin = 14
 
 print '> Instantiating gpio object'
-gpio14 	= omegaGpio.OmegaGpio(pin)
+gpio14 	= onionGpio.OnionGpio(pin)
 print ''
 
 print '> Set direction to input... '

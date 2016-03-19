@@ -9,17 +9,26 @@ then
 fi
 
 # python class
-localPath="python/omegaGpio.py"
-remotePath="/root/gpio/omegaGpio.py"
+localPath="python/onionGpio.py"
+remotePath="/root/gpio/onionGpio.py"
 
 cmd="rsync -va --progress $localPath root@omega-$1.local:$remotePath"
 echo "$cmd"
 eval "$cmd"
 
 
-# test script python
+# python test script 
 localPath="python/examples/gpio-test.py"
 remotePath="/root/gpio/gpio-test.py"
+
+cmd="rsync -va --progress $localPath root@omega-$1.local:$remotePath"
+echo "$cmd"
+eval "$cmd"
+
+
+# python test script #2
+localPath="python/examples/gpio-active-low-test.py"
+remotePath="/root/gpio/gpio-active-low-test.py"
 
 cmd="rsync -va --progress $localPath root@omega-$1.local:$remotePath"
 echo "$cmd"
