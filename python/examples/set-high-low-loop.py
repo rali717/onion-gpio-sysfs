@@ -1,5 +1,5 @@
 ## EXAMPLE CODE
-# Set a GPIO to output, and alternate the output between LOW and HIGH every 5 seconds:
+# Set a GPIO to output, and alternate the output between LOW and HIGH every 5 seconds
 
 import time
 import onionGpio
