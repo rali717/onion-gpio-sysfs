@@ -142,11 +142,6 @@ class OnionGpio:
 				fd.close()
 				ret = _EXIT_SUCCESS
 
-				# set default for output direction
-				if direction == _GPIO_OUTPUT_DIRECTION:
-					self.setValue(0)
-
-
 			# release the gpio sysfs instance
 			status 	= self._freeGpio()
 
