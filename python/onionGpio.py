@@ -36,7 +36,7 @@ class OnionGpio:
 		self.verbose 	= verbose
 
 		if self.verbose > 0:
-			print 'GPIO%d path: %s'%(self.gpio, self.path)
+			print ('GPIO%d path: %s'%(self.gpio, self.path))
 		
 
 	def _initGpio(self):
@@ -178,7 +178,7 @@ class OnionGpio:
 				activeLow 	= fd.read()
 				fd.close()
 				if self.verbose > 0:
-					print 'onionGpio:getActiveLow:: Reading %s file ... Read %s'%(gpioFile, activeLow)
+					print ('onionGpio:getActiveLow:: Reading %s file ... Read %s'%(gpioFile, activeLow))
 
 			# release the gpio sysfs instance
 			status 	= self._freeGpio()
@@ -199,7 +199,7 @@ class OnionGpio:
 			if activeLow == _GPIO_ACTIVE_HIGH or activeLow == _GPIO_ACTIVE_LOW:
 				with open(gpioFile, 'w') as fd:
 					if self.verbose > 0:
-						print 'onionGpio:_setActiveLow:: Writing %s to %s file'%(str(activeLow), gpioFile)
+						print ('onionGpio:_setActiveLow:: Writing %s to %s file'%(str(activeLow), gpioFile))
 					fd.write(str(activeLow))
 					fd.close()
 					ret = _EXIT_SUCCESS
